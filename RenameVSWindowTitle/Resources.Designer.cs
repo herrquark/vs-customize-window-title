@@ -301,6 +301,15 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Active document path relative to solution root or, if no solution open, document full path..
+        /// </summary>
+        internal static string tag_relativePath {
+            get {
+                return ResourceManager.GetString("tag_relativePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active solution name..
         /// </summary>
         internal static string tag_solutionName {

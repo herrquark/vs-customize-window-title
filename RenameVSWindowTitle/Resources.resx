@@ -178,6 +178,9 @@
   <data name="tag_projectName" xml:space="preserve">
     <value>Active project name.</value>
   </data>
+  <data name="tag_relativePath" xml:space="preserve">
+    <value>Active document path relative to solution root or, if no solution open, document full path.</value>
+  </data>
   <data name="tag_solutionName" xml:space="preserve">
     <value>Active solution name.</value>
   </data>

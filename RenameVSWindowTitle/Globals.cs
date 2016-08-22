@@ -42,14 +42,17 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
 
         public static string GetActiveProjectNameOrEmpty() {
             Project project;
-            return TryGetActiveProject(DTE, out project) ? project.Name ?? string.Empty : "";
+            return TryGetActiveProject(DTE, out project) ? project.Name ?? string.Empty : string.Empty;
         }
 
-        public static string GetActiveDocumentNameOrEmpty(Document activeDocument) {
+        public static string GetActiveDocumentNameOrEmpty(Document activeDocument, Window activeWindow) {
             if (activeDocument != null) {
                 return Path.GetFileName(activeDocument.FullName);
             }
-            return string.Empty;
+            if (activeWindow != null && activeWindow.Caption != DTE.MainWindow.Caption) {
+                return activeWindow.Caption;
+            }
+            return "";
         }
 
         public static string GetActiveDocumentPathOrEmpty(Document activeDocument) {

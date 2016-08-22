@@ -370,10 +370,10 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
             return this.CurrentSettingsOverride;
         }
 
-        public const string DefaultPatternIfDesignMode = "[solutionName] - [ideName]";
-        public const string DefaultPatternIfBreakMode = "[solutionName] (Debugging) - [ideName]";
-        public const string DefaultPatternIfRunningMode = "[solutionName] (Running) - [ideName]";
-        public const string DefaultPatternIfDocumentButNoSolutionOpen = "[documentName] - [ideName]";
+        public const string DefaultPatternIfDesignMode = "[solutionName] - [relativePath]/[documentName] - [ideName]";
+        public const string DefaultPatternIfBreakMode = "[solutionName] - [relativePath]/[documentName] (Debugging) - [ideName]";
+        public const string DefaultPatternIfRunningMode = "[solutionName] - [relativePath]/[documentName] (Running) - [ideName]";
+        public const string DefaultPatternIfDocumentButNoSolutionOpen = "[relativePath]/[documentName] - [ideName]";
         public const string DefaultPatternIfNothingOpen = "[ideName]";
         public const string DefaultAppendedString = "*";
         public const int DefaultClosestParentDepth = 1;
@@ -431,7 +431,8 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
             "configurationName",
             "gitBranchName",
             "workspaceName",
-            "workspaceOwnerName"
+            "workspaceOwnerName",
+            "relativePath"
         };
 
         readonly Regex TagRegex = new Regex(@"\[([^\[\]]+)\]", RegexOptions.Multiline | RegexOptions.Compiled);
@@ -446,16 +447,17 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                     return this.IDEName;
                 }
             }
-            string path;
-            var documentName = Globals.GetActiveDocumentNameOrEmpty(activeDocument);
+
+            var path = string.Empty;
+            var documentName = Globals.GetActiveDocumentNameOrEmpty(activeDocument, null);
             var documentPath = Globals.GetActiveDocumentPathOrEmpty(activeDocument);
             var windowName = Globals.GetActiveWindowNameOrEmpty(activeWindow);
 
             if (!string.IsNullOrEmpty(solutionFp)) {
                 path = solutionFp;
             }
-            else {
-                path = documentPath;
+            else if (activeDocument != null) {
+                path = activeDocument.FullName;
             }
 
             var pathParts = this.SplitPath(path);
@@ -489,7 +491,7 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                             case "workspaceOwnerName":
                                 return Globals.GetWorkspaceOwnerNameOrEmpty(solution);
                             case "documentName":
-                                return string.IsNullOrEmpty(documentName) ? windowName : documentName;
+                                return Globals.GetActiveDocumentNameOrEmpty(activeDocument, activeWindow) ?? string.Empty;
                             case "documentPath":
                                 return string.IsNullOrEmpty(documentName) ? windowName : documentPath;
                             case "vsMajorVersion":
@@ -502,6 +504,29 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                                 return string.IsNullOrEmpty(path) ? windowName : path;
                             case "parentPath":
                                 return GetParentPath(pathParts, cfg?.ClosestParentDepth ?? this.GlobalSettings.ClosestParentDepth, cfg?.FarthestParentDepth ?? this.GlobalSettings.FarthestParentDepth) ?? string.Empty;
+                            case "relativePath":
+                                var relativePath = Globals.GetActiveDocumentNameOrEmpty(activeDocument, activeWindow) ?? string.Empty;
+
+                                if (activeDocument != null)
+                                {
+                                    if (!string.IsNullOrEmpty(solutionFp))
+                                    {
+                                        Uri docUri = null;
+                                        Uri solutionUri = null;
+
+                                        Uri.TryCreate(activeDocument.FullName, UriKind.Absolute, out docUri);
+                                        Uri.TryCreate(solutionFp, UriKind.Absolute, out solutionUri);
+
+                                        if (docUri != null && solutionUri != null)
+                                            relativePath = solutionUri.MakeRelativeUri(docUri).ToString().Replace('/', Path.DirectorySeparatorChar);
+                                    }
+                                    else
+                                    {
+                                        relativePath = path;
+                                    }
+                                }
+
+                                return relativePath;
                             default:
                                 if (tag.StartsWith("parent")) {
                                     var m = RangeRegex.Match(tag.Substring("parent".Length));
