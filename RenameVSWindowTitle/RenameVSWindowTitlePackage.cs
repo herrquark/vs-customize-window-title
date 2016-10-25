@@ -412,6 +412,8 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
         public static readonly string[] SupportedTags = {
             "documentName",
             "projectName",
+            "documentProjectName",
+            "documentProjectFileName",
             "solutionName",
             "documentPath",
             "documentPath:X",
@@ -438,12 +440,23 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
         readonly Regex TagRegex = new Regex(@"\[([^\[\]]+)\]", RegexOptions.Multiline | RegexOptions.Compiled);
 
         internal string GetNewTitle(Solution solution, string pattern, SettingsSet cfg) {
-            var activeDocument = Globals.DTE.ActiveDocument;
-            var activeWindow = Globals.DTE.ActiveWindow;
+            Document activeDocument = null;
+            Window activeWindow = null;
+            try {
+                activeDocument = Globals.DTE.ActiveDocument;
+            }
+            catch {
+                // Do nothing
+            }
+            try {
+                activeWindow = Globals.DTE.ActiveWindow;
+            }
+            catch {
+                // Do nothing
+            }
             var solutionFp = solution?.FullName;
             if (activeDocument == null && string.IsNullOrEmpty(solutionFp)) {
-                var window = Globals.DTE.ActiveWindow;
-                if (window == null || window.Caption == Globals.DTE.MainWindow.Caption) {
+                if (activeWindow == null || activeWindow.Caption == Globals.DTE.MainWindow.Caption) {
                     return this.IDEName;
                 }
             }
@@ -492,6 +505,10 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                                 return Globals.GetWorkspaceOwnerNameOrEmpty(solution);
                             case "documentName":
                                 return Globals.GetActiveDocumentNameOrEmpty(activeDocument, activeWindow) ?? string.Empty;
+                            case "documentProjectName":
+                                return Globals.GetActiveDocumentProjectNameOrEmpty(activeDocument: activeDocument);
+                            case "documentProjectFileName":
+                                return Globals.GetActiveDocumentProjectFileNameOrEmpty(activeDocument: activeDocument);
                             case "documentPath":
                                 return string.IsNullOrEmpty(documentName) ? windowName : documentPath;
                             case "vsMajorVersion":
@@ -531,6 +548,7 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                                 if (tag.StartsWith("parent")) {
                                     var m = RangeRegex.Match(tag.Substring("parent".Length));
                                     if (m.Success) {
+                                        if (!pathParts.Any()) return string.Empty;
                                         var startIndex = Math.Min(pathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["startIndex"].Value, CultureInfo.InvariantCulture)));
                                         var endIndex = Math.Min(pathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["endIndex"].Value, CultureInfo.InvariantCulture)));
                                         var pathRange = pathParts.GetRange(startIndex: pathParts.Length - 1 - startIndex, endIndex: pathParts.Length - 1 - endIndex).ToArray();
@@ -538,13 +556,15 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                                     }
                                     m = IndexRegex.Match(tag.Substring("parent".Length));
                                     if (m.Success) {
+                                        if (!pathParts.Any()) return string.Empty;
                                         var index = Math.Min(pathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["index"].Value, CultureInfo.InvariantCulture)));
-                                        return pathParts.Any() ? pathParts[pathParts.Length - 1 - index] : string.Empty;
+                                        return pathParts[pathParts.Length - 1 - index];
                                     }
                                 }
                                 if (tag.StartsWith("path")) {
                                     var m = RangeRegex.Match(tag.Substring("path".Length));
                                     if (m.Success) {
+                                        if (!pathParts.Any()) return string.Empty;
                                         var startIndex = Math.Min(pathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["startIndex"].Value, CultureInfo.InvariantCulture)));
                                         var endIndex = Math.Min(pathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["endIndex"].Value, CultureInfo.InvariantCulture)));
                                         var pathRange = pathParts.GetRange(startIndex: startIndex, endIndex: endIndex).ToArray();
@@ -552,13 +572,15 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                                     }
                                     m = IndexRegex.Match(tag.Substring("path".Length));
                                     if (m.Success) {
+                                        if (!pathParts.Any()) return string.Empty;
                                         var index = Math.Min(pathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["index"].Value, CultureInfo.InvariantCulture)));
-                                        return pathParts.Any() ? pathParts[index] : string.Empty;
+                                        return pathParts[index];
                                     }
                                 }
                                 if (tag.StartsWith("documentPath")) {
                                     var m = RangeRegex.Match(tag.Substring("documentPath".Length));
                                     if (m.Success) {
+                                        if (!documentPathParts.Any()) return string.Empty;
                                         var startIndex = Math.Min(documentPathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["startIndex"].Value, CultureInfo.InvariantCulture)));
                                         var endIndex = Math.Min(documentPathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["endIndex"].Value, CultureInfo.InvariantCulture)));
                                         var pathRange = documentPathParts.GetRange(startIndex: startIndex, endIndex: endIndex).ToArray();
@@ -566,13 +588,15 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                                     }
                                     m = IndexRegex.Match(tag.Substring("documentPath".Length));
                                     if (m.Success) {
+                                        if (!documentPathParts.Any()) return string.Empty;
                                         var index = Math.Min(documentPathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["index"].Value, CultureInfo.InvariantCulture)));
-                                        return documentPathParts.Any() ? documentPathParts[index] : string.Empty;
+                                        return documentPathParts[index];
                                     }
                                 }
                                 if (tag.StartsWith("documentParentPath")) {
                                     var m = RangeRegex.Match(tag.Substring("documentParentPath".Length));
                                     if (m.Success) {
+                                        if (!documentPathParts.Any()) return string.Empty;
                                         var startIndex = Math.Min(documentPathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["startIndex"].Value, CultureInfo.InvariantCulture)));
                                         var endIndex = Math.Min(documentPathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["endIndex"].Value, CultureInfo.InvariantCulture)));
                                         var pathRange = documentPathParts.GetRange(startIndex: documentPathParts.Length - 1 - startIndex, endIndex: documentPathParts.Length - 1 - endIndex).ToArray();
@@ -580,8 +604,9 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                                     }
                                     m = IndexRegex.Match(tag.Substring("documentParentPath".Length));
                                     if (m.Success) {
+                                        if (!documentPathParts.Any()) return string.Empty;
                                         var index = Math.Min(documentPathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["index"].Value, CultureInfo.InvariantCulture)));
-                                        return documentPathParts.Any() ? documentPathParts[documentPathParts.Length - 1 - index] : string.Empty;
+                                        return documentPathParts[documentPathParts.Length - 1 - index];
                                     }
                                 }
                                 break;

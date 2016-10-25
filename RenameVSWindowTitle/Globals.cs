@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using System.Text.RegularExpressions;
 using EnvDTE;
 using EnvDTE80;
@@ -45,6 +46,15 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
             return TryGetActiveProject(DTE, out project) ? project.Name ?? string.Empty : string.Empty;
         }
 
+        public static string GetActiveDocumentProjectNameOrEmpty(Document activeDocument) {
+            return activeDocument?.ProjectItem?.ContainingProject?.Name ?? string.Empty;
+        }
+
+        public static string GetActiveDocumentProjectFileNameOrEmpty(Document activeDocument) {
+            var fn = activeDocument?.ProjectItem?.ContainingProject?.FullName;
+            return fn != null ? Path.GetFileName(fn) : string.Empty;
+        }
+        
         public static string GetActiveDocumentNameOrEmpty(Document activeDocument, Window activeWindow) {
             if (activeDocument != null) {
                 return Path.GetFileName(activeDocument.FullName);
@@ -56,10 +66,7 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
         }
 
         public static string GetActiveDocumentPathOrEmpty(Document activeDocument) {
-            if (activeDocument != null) {
-                return activeDocument.FullName;
-            }
-            return string.Empty;
+            return activeDocument != null ? activeDocument.FullName : string.Empty;
         }
 
         public static string GetActiveWindowNameOrEmpty(Window activeWindow) {
@@ -122,6 +129,7 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                     FileName = GitExecFp,
                     Arguments = "symbolic-ref --short -q HEAD", //As per: http://git-blame.blogspot.sg/2013/06/checking-current-branch-programatically.html. Or: "rev-parse --abbrev-ref HEAD"
                     UseShellExecute = false,
+                    StandardOutputEncoding = Encoding.UTF8,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
                     WorkingDirectory = workingDirectory
@@ -151,6 +159,7 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                     FileName = GitExecFp,
                     Arguments = "rev-parse --is-inside-work-tree",
                     UseShellExecute = false,
+                    StandardOutputEncoding = Encoding.UTF8,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
                     WorkingDirectory = workingDirectory

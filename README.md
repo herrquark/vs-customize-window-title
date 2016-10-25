@@ -9,9 +9,15 @@ http://erwinmayer.com/labs/visual-studio-2010-extension-rename-visual-studio-win
 
 **Description**
 
-This lightweight extension will change the window title of Visual Studio to include a folder tree with a configurable min depth and max depth distance from the solution/project file, or using special tags.
+This lightweight extension allows changing the window title of Visual Studio to include a folder tree with a configurable min depth and max depth distance from the solution/project file, and the use of special tags to help with many other possible scenarios (Git, TFS...). 
 
-It can also be configured so that the renaming rules apply only when at least two instances of Visual Studio are running with the same window title. Solution-specific overriding rules are available as well.
+Solution-specific overriding rules are available as well to cover virtually any possible renaming needs.
+
+It can also be configured so that the rules apply only when at least two instances of Visual Studio are running with the same window title.
+
+**Documentation**
+
+Full documentation is available on the [Visual Studio Gallery page](https://visualstudiogallery.msdn.microsoft.com/f3f23845-5b1e-4811-882f-60b7181fa6d6).
 
 **Supported editions**
 
