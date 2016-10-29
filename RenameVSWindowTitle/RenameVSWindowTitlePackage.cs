@@ -432,6 +432,7 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
             "platformName",
             "configurationName",
             "gitBranchName",
+            "hgBranchName",
             "workspaceName",
             "workspaceOwnerName",
             "relativePath"
@@ -499,6 +500,9 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                             case "gitBranchName":
                                 Globals.UpdateGitExecFp(this.GlobalSettings.GitDirectory); // there is likely a better way to adjust the git path
                                 return Globals.GetGitBranchNameOrEmpty(solution);
+                            case "hgBranchName":
+                                Globals.UpdateHgExecFp(this.GlobalSettings.HgDirectory);
+                                return Globals.GetHgBranchNameOrEmpty(solution);
                             case "workspaceName":
                                 return Globals.GetWorkspaceNameOrEmpty(solution);
                             case "workspaceOwnerName":
