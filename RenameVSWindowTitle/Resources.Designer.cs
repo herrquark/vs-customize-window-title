@@ -364,6 +364,15 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Process ID of Visual Studio.
+        /// </summary>
+        internal static string tag_vsProcessID {
+            get {
+                return ResourceManager.GetString("tag_vsProcessID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current Team Foundation Server (TFS) workspace name..
         /// </summary>
         internal static string tag_workspaceName {
