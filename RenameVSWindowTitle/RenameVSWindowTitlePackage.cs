@@ -441,8 +441,9 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
             "hgBranchName",
             "workspaceName",
             "workspaceOwnerName",
+            "relativePath",
             "vsProcessID",
-            "relativePath"
+            "env:X"
         };
 
         readonly Regex TagRegex = new Regex(@"\[([^\[\]]+)\]", RegexOptions.Multiline | RegexOptions.Compiled);
@@ -621,6 +622,12 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                                         var index = Math.Min(documentPathParts.Length - 1, Math.Max(0, int.Parse(m.Groups["index"].Value, CultureInfo.InvariantCulture)));
                                         return documentPathParts[documentPathParts.Length - 1 - index];
                                     }
+                                } 
+                                {
+                                    var m = EnvRegex.Match(tag);
+                                    if (m.Success) {
+                                        return Environment.GetEnvironmentVariable(m.Groups[1].Value);
+                                    }
                                 }
                                 break;
                         }
@@ -641,6 +648,7 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
             return pattern + " " + appendedString;
         }
 
+        static readonly Regex EnvRegex = new Regex(@"^env:(.+)$", RegexOptions.Compiled);
         static readonly Regex IndexRegex = new Regex(@"^:?(?<index>[0-9]+)$", RegexOptions.Compiled);
         static readonly Regex RangeRegex = new Regex(@"^:(?<startIndex>[0-9]+):(?<endIndex>[0-9]+)$", RegexOptions.Compiled);
 
