@@ -59,6 +59,7 @@
     <Compile Include="Resolvers\GitResolver.cs" />
     <Compile Include="Resolvers\HgResolver.cs" />
     <Compile Include="Resolvers\IdeResolver.cs" />
+    <Compile Include="Resolvers\RelativePathResolver.cs" />
     <Compile Include="Resolvers\PathResolver.cs" />
     <Compile Include="Resolvers\ProjectResolver.cs" />
     <Compile Include="Resolvers\SolutionResolver.cs" />

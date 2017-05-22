@@ -84,7 +84,8 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                 new WorkspaceNameResolver(),
                 new WorkspaceOwnerNameResolver(),
                 new VsProcessIdResolver(),
-                new EnvResolver()
+                new EnvResolver(),
+                new RelativePathResolver()
             };
             this.SupportedTags = this.TagResolvers.SelectMany(r => r.TagNames).ToArray();
             this.SimpleTagResolvers = this.TagResolvers.OfType<ISimpleTagResolver>().ToDictionary(t => t.TagName, t => t);

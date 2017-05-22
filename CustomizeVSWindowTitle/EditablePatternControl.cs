@@ -107,13 +107,15 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
                         this.lbPreview.Text = "please close solution to enable preview!";
                         return;
                     }
-                    var ad = Globals.GetActiveDocumentNameOrEmpty(activeDocument, activeWindow);
+                    var ad = DocumentHelper.GetActiveDocumentNameOrEmpty(activeDocument);
+                    if (string.IsNullOrEmpty(ad)) {
+                        ad = DocumentHelper.GetActiveWindowNameOrEmpty(activeWindow);
+                    }
                     if (string.IsNullOrEmpty(ad)) {
                         this.lbPreview.Text = "please load any document or open any window to enable preview!";
                         return;
                     }
                     break;
-
                 case PreviewRequiresAttribute.Requirement.Solution:
                     if (solution == null || string.IsNullOrEmpty(solutionFp)) {
                         this.lbPreview.Text = "please load any solution to enable preview!";
