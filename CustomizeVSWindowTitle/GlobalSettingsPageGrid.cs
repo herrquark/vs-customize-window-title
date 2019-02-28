@@ -19,13 +19,13 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
 
         [Category("General")]
         [DisplayName("Farthest parent folder depth")]
-        [Description("Default: 1. Distance of the farthest parent folder to be shown. 1 will only show the folder of the opened projet/solution file, before the project/folder name")]
+        [Description("Default: 1. Distance of the farthest parent folder to be shown. 1 will only show the folder of the opened project/solution file, before the project/folder name")]
         [DefaultValue(CustomizeVSWindowTitle.DefaultFarthestParentDepth)]
         public int FarthestParentDepth { get; set; } = 1;
 
         [Category("General")]
         [DisplayName("Closest parent folder depth")]
-        [Description("Default: 1. Distance of the closest parent folder to be shown. 1 will only show the folder of the opened projet/solution file, before the project/folder name.")]
+        [Description("Default: 1. Distance of the closest parent folder to be shown. 1 will only show the folder of the opened project/solution file, before the project/folder name.")]
         [DefaultValue(CustomizeVSWindowTitle.DefaultClosestParentDepth)]
         public int ClosestParentDepth { get; set; } = 1;
 
@@ -91,12 +91,18 @@ namespace ErwinMayerLabs.RenameVSWindowTitle {
         public string HgDirectory { get; set; } = "";
 
         [Category("Source control")]
-        [DisplayName("Svn binaries directory")]
+        [DisplayName("SVN binaries directory")]
         [Description("Default: Empty. Search windows PATH for svn if empty.")]
         [Editor(typeof(FilePickerEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        [FilePicker(true, SvnResolver.SvnExecFn, "Svn executable(svn.exe)|svn.exe|All files(*.*)|*.*", 1)]
+        [FilePicker(true, SvnResolver.SvnExecFn, "SVN executable(svn.exe)|svn.exe|All files(*.*)|*.*", 1)]
         [DefaultValue("")]
         public string SvnDirectory { get; set; } = "";
+
+        [Category("Source control")]
+        [DisplayName("SVN directory separator")]
+        [Description("Default: '/'. Specify the character used to separate the SVN directories.")]
+        [DefaultValue("/")]
+        public string SvnDirectorySeparator { get; set; } = "/";
 
         [Category("Debug")]
         [DisplayName("Enable debug mode")]
